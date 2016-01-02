@@ -33,26 +33,27 @@
     self.req = [DGDistanceRequest alloc];
     NSString *initialLocation = self.location0.text;
     NSArray *destination = @[self.location1.text, self.location2.text, self.location3.text, self.location4.text];
-    NSArray *distances = @[self.distance1.text, self.distance2.text, self.distance3.text, self.distance4.text];
-    [self.req initWithLocationDescriptions:destination sourceDescription:initialLocation];
+    self.req = [self.req initWithLocationDescriptions:destination sourceDescription:initialLocation];
     
     __weak ViewController *weakSelf = self;
     
     self.req.callback = ^void(NSArray *responses){
         ViewController *strongSelf = weakSelf;
         if(!strongSelf) return;
+        UILabel *distances[] = {strongSelf.distance1, strongSelf.distance2, strongSelf.distance3, strongSelf.distance4};
+        NSNull *nullValue = [NSNull null];
         
-        for (int i = 0; i == responses.count; i++){
-            if(responses[i]!=nil){
-                strongSelf.distances[i]=[NSString stringWithFormat:@"%.2f km", [responses[i] floatValue]/1000.0]
+        for (int i = 0; i < responses.count; i++){
+            if(responses[i]!=nullValue){
+                distances[i].text=[NSString stringWithFormat:@"%.2f km", [responses[i] floatValue]/1000.0];
             }
             else{
-                strongSelf.distances[i] = @"Error";
+                distances[i].text = @"";
             }
+            strongSelf.calculateBtn.enabled = YES;
+            strongSelf.req = nil;
         }
     };
-    
-    self.calculateBtn.enabled = YES;
     
     [self.req start];
 }
